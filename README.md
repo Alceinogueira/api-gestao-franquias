@@ -121,4 +121,4 @@ Franquias.Api/
 
 ## Repositório
 
-Link do GitHub: _COLOQUE AQUI O LINK DO SEU REPOSITÓRIO_
+Link do GitHub:https://github.com/Alceinogueira/api-gestao-franquias.git
