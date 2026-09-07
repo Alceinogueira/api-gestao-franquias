@@ -1,0 +1,210 @@
+@host = http://localhost:5080
+
+### Login como administrador (copie o token retornado para a variavel abaixo)
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@franquias.com",
+  "senha": "Admin@123"
+}
+
+### Token usado nas demais requisicoes
+@token = COLE_AQUI_O_TOKEN
+
+### Login como operador de unidade
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "operador.centro@franquias.com",
+  "senha": "Operador@123"
+}
+
+### Cadastrar usuario (somente administrador)
+POST {{host}}/api/auth/usuarios
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "nome": "Novo Operador",
+  "email": "novo.operador@franquias.com",
+  "senha": "Senha@123",
+  "perfil": 3,
+  "unidadeFranqueadaId": 1
+}
+
+### Listar unidades
+GET {{host}}/api/unidades
+Authorization: Bearer {{token}}
+
+### Listar apenas unidades inativas
+GET {{host}}/api/unidades?ativa=false
+Authorization: Bearer {{token}}
+
+### Buscar unidade por texto (nome, cidade, cnpj ou responsavel)
+GET {{host}}/api/unidades?texto=campinas
+Authorization: Bearer {{token}}
+
+### Cadastrar unidade
+POST {{host}}/api/unidades
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "nome": "Franquia Interior",
+  "cnpj": "00111222000105",
+  "cidade": "Ribeirao Preto",
+  "estado": "SP",
+  "endereco": "Rua das Palmeiras, 123",
+  "telefone": "(16) 3100-0105",
+  "email": "interior@cafebom.com.br",
+  "dataInicio": "2026-03-01",
+  "percentualRoyalty": 5,
+  "franqueadoraId": 1,
+  "responsaveis": [
+    { "nome": "Rita Alves", "cpf": "666.666.666-66", "email": "rita@interior.com.br", "telefone": "(16) 99999-0006", "franqueado": true }
+  ]
+}
+
+### Cadastrar categoria
+POST {{host}}/api/categorias
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "nome": "Combos"
+}
+
+### Cadastrar produto
+POST {{host}}/api/produtos
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "nome": "Combo Cafe + Pao de Queijo",
+  "descricao": "Cafe expresso com porcao de pao de queijo",
+  "precoBase": 10.90,
+  "ehServico": false,
+  "categoriaId": 1,
+  "fornecedorId": 1
+}
+
+### Consultar produtos por nome, categoria e situacao
+GET {{host}}/api/produtos?nome=cafe&ativo=true
+Authorization: Bearer {{token}}
+
+### Cadastrar fornecedor
+POST {{host}}/api/fornecedores
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "nome": "Torrefacao Sul Ltda",
+  "cnpj": "99888777000111",
+  "email": "contato@torrefacaosul.com.br",
+  "telefone": "(51) 3111-0000"
+}
+
+### Consultar estoque de uma unidade
+GET {{host}}/api/estoques/unidade/1
+Authorization: Bearer {{token}}
+
+### Itens abaixo do estoque minimo
+GET {{host}}/api/estoques/abaixo-do-minimo
+Authorization: Bearer {{token}}
+
+### Movimentar estoque (entrada)
+POST {{host}}/api/estoques/movimentacoes
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "estoqueId": 1,
+  "tipo": 1,
+  "quantidade": 50,
+  "observacao": "Reposicao semanal"
+}
+
+### Registrar venda (fica com status Aberta e calcula o total)
+POST {{host}}/api/vendas
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "unidadeFranqueadaId": 1,
+  "itens": [
+    { "produtoServicoId": 1, "quantidade": 2 },
+    { "produtoServicoId": 4, "quantidade": 3 }
+  ]
+}
+
+### Confirmar venda (baixa o estoque)
+POST {{host}}/api/vendas/1/confirmar
+Authorization: Bearer {{token}}
+
+### Consultar vendas por unidade e intervalo de datas
+GET {{host}}/api/vendas?unidadeId=1&inicio=2026-07-01&fim=2026-08-31
+Authorization: Bearer {{token}}
+
+### Gerar royalty do periodo
+POST {{host}}/api/royalties/gerar
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "unidadeFranqueadaId": 3,
+  "ano": 2026,
+  "mes": 8
+}
+
+### Registrar pagamento de royalty
+PATCH {{host}}/api/royalties/2/pagamento
+Authorization: Bearer {{token}}
+
+### Abrir chamado
+POST {{host}}/api/chamados
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "unidadeFranqueadaId": 2,
+  "titulo": "Solicitacao de material de divulgacao",
+  "categoria": "Marketing",
+  "descricao": "Precisamos de banners para a campanha de aniversario.",
+  "prioridade": 2
+}
+
+### Atualizar chamado
+PUT {{host}}/api/chamados/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "status": 2,
+  "resolucao": "Tecnico agendado para amanha."
+}
+
+### Relatorio: faturamento por unidade
+GET {{host}}/api/relatorios/faturamento?inicio=2026-07-01&fim=2026-08-31
+Authorization: Bearer {{token}}
+
+### Relatorio: ranking de unidades por faturamento
+GET {{host}}/api/relatorios/ranking-unidades?inicio=2026-07-01&fim=2026-08-31
+Authorization: Bearer {{token}}
+
+### Relatorio: produtos mais vendidos
+GET {{host}}/api/relatorios/produtos-mais-vendidos?top=5
+Authorization: Bearer {{token}}
+
+### Relatorio: total de royalties
+GET {{host}}/api/relatorios/royalties?ano=2026
+Authorization: Bearer {{token}}
+
+### Relatorio: estoque critico
+GET {{host}}/api/relatorios/estoque-critico
+Authorization: Bearer {{token}}
+
+### Relatorio: chamados por status
+GET {{host}}/api/relatorios/chamados-por-status
+Authorization: Bearer {{token}}

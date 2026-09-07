@@ -1,0 +1,404 @@
+{
+  "info": {
+    "name": "Sistema de Gestao de Franquias",
+    "description": "Colecao de testes da API REST do trabalho de Desenvolvimento Back-end.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5080" },
+    { "key": "token", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login (admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var body = pm.response.json();",
+                  "if (body.token) { pm.collectionVariables.set('token', body.token); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@franquias.com\",\n  \"senha\": \"Admin@123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login (operador)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"operador.centro@franquias.com\",\n  \"senha\": \"Operador@123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Cadastrar usuario",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/auth/usuarios", "host": ["{{baseUrl}}"], "path": ["api", "auth", "usuarios"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Novo Operador\",\n  \"email\": \"novo.operador@franquias.com\",\n  \"senha\": \"Senha@123\",\n  \"perfil\": 3,\n  \"unidadeFranqueadaId\": 1\n}"
+            }
+          }
+        },
+        {
+          "name": "Listar usuarios",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/api/auth/usuarios", "host": ["{{baseUrl}}"], "path": ["api", "auth", "usuarios"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Unidades",
+      "item": [
+        {
+          "name": "Listar unidades",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/api/unidades", "host": ["{{baseUrl}}"], "path": ["api", "unidades"] }
+          }
+        },
+        {
+          "name": "Buscar unidade por texto",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/unidades?texto=campinas",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "unidades"],
+              "query": [{ "key": "texto", "value": "campinas" }]
+            }
+          }
+        },
+        {
+          "name": "Cadastrar unidade",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/unidades", "host": ["{{baseUrl}}"], "path": ["api", "unidades"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Franquia Interior\",\n  \"cnpj\": \"00111222000105\",\n  \"cidade\": \"Ribeirao Preto\",\n  \"estado\": \"SP\",\n  \"endereco\": \"Rua das Palmeiras, 123\",\n  \"telefone\": \"(16) 3100-0105\",\n  \"email\": \"interior@cafebom.com.br\",\n  \"dataInicio\": \"2026-03-01\",\n  \"percentualRoyalty\": 5,\n  \"franqueadoraId\": 1,\n  \"responsaveis\": [\n    { \"nome\": \"Rita Alves\", \"cpf\": \"666.666.666-66\", \"email\": \"rita@interior.com.br\", \"telefone\": \"(16) 99999-0006\", \"franqueado\": true }\n  ]\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Catalogo",
+      "item": [
+        {
+          "name": "Cadastrar categoria",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/categorias", "host": ["{{baseUrl}}"], "path": ["api", "categorias"] },
+            "body": { "mode": "raw", "raw": "{\n  \"nome\": \"Combos\"\n}" }
+          }
+        },
+        {
+          "name": "Cadastrar produto",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/produtos", "host": ["{{baseUrl}}"], "path": ["api", "produtos"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Combo Cafe + Pao de Queijo\",\n  \"descricao\": \"Cafe expresso com porcao de pao de queijo\",\n  \"precoBase\": 10.90,\n  \"ehServico\": false,\n  \"categoriaId\": 1,\n  \"fornecedorId\": 1\n}"
+            }
+          }
+        },
+        {
+          "name": "Consultar produtos por nome/situacao",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/produtos?nome=cafe&ativo=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "produtos"],
+              "query": [
+                { "key": "nome", "value": "cafe" },
+                { "key": "ativo", "value": "true" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Cadastrar fornecedor",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/fornecedores", "host": ["{{baseUrl}}"], "path": ["api", "fornecedores"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Torrefacao Sul Ltda\",\n  \"cnpj\": \"99888777000111\",\n  \"email\": \"contato@torrefacaosul.com.br\",\n  \"telefone\": \"(51) 3111-0000\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Estoque",
+      "item": [
+        {
+          "name": "Estoque por unidade",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/api/estoques/unidade/1", "host": ["{{baseUrl}}"], "path": ["api", "estoques", "unidade", "1"] }
+          }
+        },
+        {
+          "name": "Itens abaixo do minimo",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/api/estoques/abaixo-do-minimo", "host": ["{{baseUrl}}"], "path": ["api", "estoques", "abaixo-do-minimo"] }
+          }
+        },
+        {
+          "name": "Movimentar estoque (entrada)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/estoques/movimentacoes", "host": ["{{baseUrl}}"], "path": ["api", "estoques", "movimentacoes"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estoqueId\": 1,\n  \"tipo\": 1,\n  \"quantidade\": 50,\n  \"observacao\": \"Reposicao semanal\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Vendas",
+      "item": [
+        {
+          "name": "Registrar venda",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/vendas", "host": ["{{baseUrl}}"], "path": ["api", "vendas"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"unidadeFranqueadaId\": 1,\n  \"itens\": [\n    { \"produtoServicoId\": 1, \"quantidade\": 2 },\n    { \"produtoServicoId\": 4, \"quantidade\": 3 }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "Confirmar venda",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/api/vendas/1/confirmar", "host": ["{{baseUrl}}"], "path": ["api", "vendas", "1", "confirmar"] }
+          }
+        },
+        {
+          "name": "Consultar vendas por unidade e periodo",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/vendas?unidadeId=1&inicio=2026-07-01&fim=2026-08-31",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "vendas"],
+              "query": [
+                { "key": "unidadeId", "value": "1" },
+                { "key": "inicio", "value": "2026-07-01" },
+                { "key": "fim", "value": "2026-08-31" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Royalties",
+      "item": [
+        {
+          "name": "Gerar royalty",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/royalties/gerar", "host": ["{{baseUrl}}"], "path": ["api", "royalties", "gerar"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"unidadeFranqueadaId\": 3,\n  \"ano\": 2026,\n  \"mes\": 8\n}"
+            }
+          }
+        },
+        {
+          "name": "Registrar pagamento de royalty",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/api/royalties/2/pagamento", "host": ["{{baseUrl}}"], "path": ["api", "royalties", "2", "pagamento"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Chamados",
+      "item": [
+        {
+          "name": "Abrir chamado",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/chamados", "host": ["{{baseUrl}}"], "path": ["api", "chamados"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"unidadeFranqueadaId\": 2,\n  \"titulo\": \"Solicitacao de material de divulgacao\",\n  \"categoria\": \"Marketing\",\n  \"descricao\": \"Precisamos de banners para a campanha de aniversario.\",\n  \"prioridade\": 2\n}"
+            }
+          }
+        },
+        {
+          "name": "Atualizar chamado",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/chamados/1", "host": ["{{baseUrl}}"], "path": ["api", "chamados", "1"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": 2,\n  \"resolucao\": \"Tecnico agendado para amanha.\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Relatorios",
+      "item": [
+        {
+          "name": "Faturamento por unidade",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/relatorios/faturamento?inicio=2026-07-01&fim=2026-08-31",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "relatorios", "faturamento"],
+              "query": [
+                { "key": "inicio", "value": "2026-07-01" },
+                { "key": "fim", "value": "2026-08-31" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Ranking de unidades",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/relatorios/ranking-unidades?inicio=2026-07-01&fim=2026-08-31",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "relatorios", "ranking-unidades"],
+              "query": [
+                { "key": "inicio", "value": "2026-07-01" },
+                { "key": "fim", "value": "2026-08-31" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Produtos mais vendidos",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/relatorios/produtos-mais-vendidos?top=5",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "relatorios", "produtos-mais-vendidos"],
+              "query": [{ "key": "top", "value": "5" }]
+            }
+          }
+        },
+        {
+          "name": "Total de royalties",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/relatorios/royalties?ano=2026",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "relatorios", "royalties"],
+              "query": [{ "key": "ano", "value": "2026" }]
+            }
+          }
+        },
+        {
+          "name": "Estoque critico",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/api/relatorios/estoque-critico", "host": ["{{baseUrl}}"], "path": ["api", "relatorios", "estoque-critico"] }
+          }
+        },
+        {
+          "name": "Chamados por status",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/api/relatorios/chamados-por-status", "host": ["{{baseUrl}}"], "path": ["api", "relatorios", "chamados-por-status"] }
+          }
+        }
+      ]
+    }
+  ]
+}

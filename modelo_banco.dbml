@@ -1,0 +1,144 @@
+// Modelo do banco de dados - Sistema de Gestao de Franquias
+// Cole este conteudo em https://dbdiagram.io para gerar a imagem do diagrama (Export > PNG).
+
+Table Franqueadoras {
+  Id int [pk, increment]
+  RazaoSocial varchar
+  NomeFantasia varchar
+  Cnpj varchar [unique]
+  Email varchar
+  Telefone varchar
+  PercentualRoyaltyPadrao decimal
+  DataCadastro datetime
+}
+
+Table Unidades {
+  Id int [pk, increment]
+  Nome varchar
+  Cnpj varchar [unique]
+  Cidade varchar
+  Estado varchar
+  Endereco varchar
+  Telefone varchar
+  Email varchar
+  DataInicio datetime
+  Ativa boolean
+  PercentualRoyalty decimal
+  FranqueadoraId int [ref: > Franqueadoras.Id]
+}
+
+Table Responsaveis {
+  Id int [pk, increment]
+  Nome varchar
+  Cpf varchar
+  Email varchar
+  Telefone varchar
+  Franqueado boolean
+  UnidadeFranqueadaId int [ref: > Unidades.Id]
+}
+
+Table Usuarios {
+  Id int [pk, increment]
+  Nome varchar
+  Email varchar [unique]
+  SenhaHash varchar
+  Perfil int
+  Ativo boolean
+  DataCadastro datetime
+  UnidadeFranqueadaId int [ref: > Unidades.Id, null]
+}
+
+Table Categorias {
+  Id int [pk, increment]
+  Nome varchar
+  Ativa boolean
+}
+
+Table Fornecedores {
+  Id int [pk, increment]
+  Nome varchar
+  Cnpj varchar [unique]
+  Email varchar
+  Telefone varchar
+  Ativo boolean
+}
+
+Table Produtos {
+  Id int [pk, increment]
+  Nome varchar
+  Descricao varchar
+  PrecoBase decimal
+  EhServico boolean
+  Ativo boolean
+  CategoriaId int [ref: > Categorias.Id]
+  FornecedorId int [ref: > Fornecedores.Id, null]
+}
+
+Table Estoques {
+  Id int [pk, increment]
+  Quantidade int
+  QuantidadeMinima int
+  UnidadeFranqueadaId int [ref: > Unidades.Id]
+  ProdutoServicoId int [ref: > Produtos.Id]
+
+  Indexes {
+    (UnidadeFranqueadaId, ProdutoServicoId) [unique]
+  }
+}
+
+Table MovimentacoesEstoque {
+  Id int [pk, increment]
+  Tipo int
+  Quantidade int
+  Observacao varchar
+  Data datetime
+  EstoqueId int [ref: > Estoques.Id]
+}
+
+Table Vendas {
+  Id int [pk, increment]
+  Data datetime
+  ValorTotal decimal
+  Status int
+  UnidadeFranqueadaId int [ref: > Unidades.Id]
+  UsuarioId int [ref: > Usuarios.Id]
+}
+
+Table ItensVenda {
+  Id int [pk, increment]
+  Quantidade int
+  PrecoUnitario decimal
+  Subtotal decimal
+  VendaId int [ref: > Vendas.Id]
+  ProdutoServicoId int [ref: > Produtos.Id]
+}
+
+Table Royalties {
+  Id int [pk, increment]
+  Ano int
+  Mes int
+  FaturamentoPeriodo decimal
+  PercentualAplicado decimal
+  ValorDevido decimal
+  StatusPagamento int
+  DataGeracao datetime
+  DataPagamento datetime
+  UnidadeFranqueadaId int [ref: > Unidades.Id]
+
+  Indexes {
+    (UnidadeFranqueadaId, Ano, Mes) [unique]
+  }
+}
+
+Table Chamados {
+  Id int [pk, increment]
+  Titulo varchar
+  Categoria varchar
+  Descricao varchar
+  Prioridade int
+  Status int
+  DataAbertura datetime
+  DataEncerramento datetime
+  Resolucao varchar
+  UnidadeFranqueadaId int [ref: > Unidades.Id]
+}
